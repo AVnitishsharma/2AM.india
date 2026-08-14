@@ -1,9 +1,11 @@
 import { useEffect, useRef, useState } from "react";
 import "./MusicPlayer.css";
+import 'boxicons/css/boxicons.min.css';
+import 'boxicons'
 
-const PLAYLIST_ID = "PLK5XgQK0Vidk";
 
-export default function MusicPlayer() {
+
+export default function MusicPlayer({ playlistId }) {
   const playerRef = useRef(null);
   const playerCreatedRef = useRef(false);
 
@@ -23,119 +25,99 @@ export default function MusicPlayer() {
     const createPlayer = () => {
       if (playerCreatedRef.current) return;
 
-      const element = document.getElementById(
-        "youtube-player"
-      );
+      const element = document.getElementById("youtube-player");
 
       if (!element) return;
 
       playerCreatedRef.current = true;
 
-      playerRef.current = new window.YT.Player(
-        "youtube-player",
-        {
-          height: "200",
-          width: "200",
+      playerRef.current = new window.YT.Player("youtube-player", {
+        height: "200",
+        width: "200",
 
-          playerVars: {
-            listType: "playlist",
-            list: PLAYLIST_ID,
+        playerVars: {
+          controls: 0,
+          playsinline: 1,
+          rel: 0,
+        },
 
-            controls: 0,
-            playsinline: 1,
-            rel: 0,
+        events: {
+          // =====================================
+          // PLAYER READY
+          // =====================================
+
+          onReady: (event) => {
+            const player = event.target;
+
+            // Default volume
+            player.setVolume(70);
+            setVolume(70);
+
+            // Load current playlist
+            if (playlistId) {
+              player.loadPlaylist({
+                list: playlistId,
+                listType: "playlist",
+                index: 0,
+                startSeconds: 0,
+              });
+            }
+
+            // Playlist loop
+            player.setLoop(true);
+
+            setTimeout(() => {
+              try {
+                const data = player.getVideoData();
+
+                setTitle(data?.title || "Music");
+                setDuration(player.getDuration() || 0);
+              } catch (error) {
+                console.log("Player info error:", error);
+              }
+            }, 1000);
           },
 
-          events: {
-            // =====================================
-            // PLAYER READY
-            // =====================================
+          // =====================================
+          // STATE CHANGE
+          // =====================================
 
-            onReady: (event) => {
-              const player = event.target;
+          onStateChange: (event) => {
+            const player = event.target;
 
-              // Volume
-              player.setVolume(70);
+            // PLAYING
+            if (
+              event.data ===
+              window.YT.PlayerState.PLAYING
+            ) {
+              setPlaying(true);
 
-              setVolume(70);
+              try {
+                const data = player.getVideoData();
 
-              // IMPORTANT:
-              // YouTube API ka actual playlist loop
-              player.setLoop(true);
+                setTitle(data?.title || "Music");
+                setDuration(player.getDuration() || 0);
+              } catch {}
+            }
 
-              setTimeout(() => {
-                try {
-                  const data =
-                    player.getVideoData();
+            // PAUSED
+            else if (
+              event.data ===
+              window.YT.PlayerState.PAUSED
+            ) {
+              setPlaying(false);
+            }
 
-                  setTitle(
-                    data?.title || "Music"
-                  );
-
-                  setDuration(
-                    player.getDuration() || 0
-                  );
-                } catch (error) {
-                  console.log(
-                    "Player info error:",
-                    error
-                  );
-                }
-              }, 1000);
-            },
-
-            // =====================================
-            // STATE CHANGE
-            // =====================================
-
-            onStateChange: (event) => {
-              const player = event.target;
-
-              // PLAYING
-              if (
-                event.data ===
-                window.YT.PlayerState.PLAYING
-              ) {
-                setPlaying(true);
-
-                try {
-                  const data =
-                    player.getVideoData();
-
-                  setTitle(
-                    data?.title || "Music"
-                  );
-
-                  setDuration(
-                    player.getDuration() || 0
-                  );
-                } catch {}
-              }
-
-              // PAUSED
-              else if (
-                event.data ===
-                window.YT.PlayerState.PAUSED
-              ) {
-                setPlaying(false);
-              }
-
-              /*
-                IMPORTANT:
-
-                ENDED par kuch nahi karna.
-
-                YouTube khud playlist ka
-                next song play karega.
-
-                Last song ke baad:
-                first song par wapas jayega
-                because setLoop(true) hai.
-              */
-            },
+            // ENDED
+            else if (
+              event.data ===
+              window.YT.PlayerState.ENDED
+            ) {
+              // YouTube playlist loop handle karega
+            }
           },
-        }
-      );
+        },
+      });
     };
 
     // =========================================
@@ -151,14 +133,12 @@ export default function MusicPlayer() {
     // =========================================
 
     else {
-      const existingScript =
-        document.querySelector(
-          'script[src="https://www.youtube.com/iframe_api"]'
-        );
+      const existingScript = document.querySelector(
+        'script[src="https://www.youtube.com/iframe_api"]'
+      );
 
       if (!existingScript) {
-        const script =
-          document.createElement("script");
+        const script = document.createElement("script");
 
         script.src =
           "https://www.youtube.com/iframe_api";
@@ -166,12 +146,51 @@ export default function MusicPlayer() {
         document.body.appendChild(script);
       }
 
-      window.onYouTubeIframeAPIReady =
-        createPlayer;
+      window.onYouTubeIframeAPIReady = createPlayer;
     }
 
+    // =========================================
+    // CLEANUP
+    // =========================================
+
+    return () => {
+      window.onYouTubeIframeAPIReady = null;
+    };
   }, []);
 
+  // =========================================
+  // CHANGE PLAYLIST
+  // =========================================
+
+  useEffect(() => {
+    if (!playerRef.current || !playlistId) return;
+
+    try {
+      const player = playerRef.current;
+
+      // Stop old playlist
+      player.stopVideo();
+
+      // Load NEW playlist from first song
+      player.loadPlaylist({
+        list: playlistId,
+        listType: "playlist",
+        index: 0,
+        startSeconds: 0,
+      });
+
+      // Loop playlist
+      player.setLoop(true);
+
+      // Reset UI
+      setPlaying(false);
+      setCurrentTime(0);
+      setDuration(0);
+      setTitle("Loading music...");
+    } catch (error) {
+      console.log("Playlist change error:", error);
+    }
+  }, [playlistId]);
 
   // =========================================
   // PROGRESS
@@ -184,17 +203,13 @@ export default function MusicPlayer() {
       try {
         const player = playerRef.current;
 
-        const time =
-          player.getCurrentTime();
-
-        const total =
-          player.getDuration();
+        const time = player.getCurrentTime();
+        const total = player.getDuration();
 
         setCurrentTime(time || 0);
         setDuration(total || 0);
 
-        const data =
-          player.getVideoData();
+        const data = player.getVideoData();
 
         if (data?.title) {
           setTitle(data.title);
@@ -206,7 +221,6 @@ export default function MusicPlayer() {
       clearInterval(interval);
     };
   }, []);
-
 
   // =========================================
   // PLAY / PAUSE
@@ -222,7 +236,6 @@ export default function MusicPlayer() {
     }
   };
 
-
   // =========================================
   // NEXT
   // =========================================
@@ -230,9 +243,12 @@ export default function MusicPlayer() {
   const nextSong = () => {
     if (!playerRef.current) return;
 
-    playerRef.current.nextVideo();
+    try {
+      playerRef.current.nextVideo();
+    } catch (error) {
+      console.log("Next song error:", error);
+    }
   };
-
 
   // =========================================
   // PREVIOUS
@@ -241,33 +257,28 @@ export default function MusicPlayer() {
   const previousSong = () => {
     if (!playerRef.current) return;
 
-    playerRef.current.previousVideo();
+    try {
+      playerRef.current.previousVideo();
+    } catch (error) {
+      console.log("Previous song error:", error);
+    }
   };
-
 
   // =========================================
   // PROGRESS
   // =========================================
 
   const changeProgress = (e) => {
-    if (
-      !playerRef.current ||
-      !duration
-    ) {
+    if (!playerRef.current || !duration) {
       return;
     }
 
-    const value =
-      Number(e.target.value);
+    const value = Number(e.target.value);
 
-    playerRef.current.seekTo(
-      value,
-      true
-    );
+    playerRef.current.seekTo(value, true);
 
     setCurrentTime(value);
   };
-
 
   // =========================================
   // VOLUME
@@ -276,8 +287,7 @@ export default function MusicPlayer() {
   const changeVolume = (e) => {
     if (!playerRef.current) return;
 
-    const value =
-      Number(e.target.value);
+    const value = Number(e.target.value);
 
     setVolume(value);
 
@@ -292,7 +302,6 @@ export default function MusicPlayer() {
     }
   };
 
-
   // =========================================
   // MUTE / UNMUTE
   // =========================================
@@ -301,14 +310,10 @@ export default function MusicPlayer() {
     if (!playerRef.current) return;
 
     if (muted) {
-      const newVolume =
-        volume > 0 ? volume : 70;
+      const newVolume = volume > 0 ? volume : 70;
 
       playerRef.current.unMute();
-
-      playerRef.current.setVolume(
-        newVolume
-      );
+      playerRef.current.setVolume(newVolume);
 
       setVolume(newVolume);
       setMuted(false);
@@ -318,30 +323,21 @@ export default function MusicPlayer() {
     }
   };
 
-
   // =========================================
   // TIME FORMAT
   // =========================================
 
   const formatTime = (seconds) => {
-    if (
-      !seconds ||
-      Number.isNaN(seconds)
-    ) {
+    if (!seconds || Number.isNaN(seconds)) {
       return "0:00";
     }
 
-    const min =
-      Math.floor(seconds / 60);
+    const min = Math.floor(seconds / 60);
 
-    const sec =
-      Math.floor(seconds % 60);
+    const sec = Math.floor(seconds % 60);
 
-    return `${min}:${sec
-      .toString()
-      .padStart(2, "0")}`;
+    return `${min}:${sec.toString().padStart(2, "0")}`;
   };
-
 
   // =========================================
   // UI
@@ -382,7 +378,6 @@ export default function MusicPlayer() {
 
           </div>
 
-
           {/* CONTROLS */}
 
           <div className="music-controls">
@@ -410,7 +405,6 @@ export default function MusicPlayer() {
 
           </div>
 
-
           {/* VOLUME */}
 
           <div className="volume-area">
@@ -419,7 +413,7 @@ export default function MusicPlayer() {
               className="volume-btn"
               onClick={toggleMute}
             >
-              {muted ? "🔇" : "🔊"}
+              {muted ? <i class='bx bx-volume-mute' ></i> : <i class='bx bx-volume-full' ></i>}
             </button>
 
             <div className="volume-popup">
@@ -428,9 +422,7 @@ export default function MusicPlayer() {
                 type="range"
                 min="0"
                 max="100"
-                value={
-                  muted ? 0 : volume
-                }
+                value={muted ? 0 : volume}
                 onChange={changeVolume}
               />
 
@@ -439,7 +431,6 @@ export default function MusicPlayer() {
           </div>
 
         </div>
-
 
         {/* PROGRESS */}
 

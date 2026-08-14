@@ -1,0 +1,411 @@
+.music-player {
+  position: fixed;
+
+  left: 50%;
+  bottom: 15%;
+  transform: translateX(-50%);
+
+  height: 78px;
+  width: calc(40% - 30px);
+
+  padding: 10px 18px;
+
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+
+  background: rgba(20, 20, 20, 0.55);
+
+  backdrop-filter: blur(22px);
+  -webkit-backdrop-filter: blur(22px);
+
+  border: 1px solid rgba(255, 255, 255, 0.13);
+
+  border-radius: 16px;
+
+  color: white;
+
+  z-index: 9999;
+}
+
+
+/* =========================
+   TOP ROW
+========================= */
+
+.music-top {
+  width: 100%;
+
+  display: flex;
+  align-items: center;
+
+  height: 45px;
+}
+
+
+/* =========================
+   SONG
+========================= */
+
+.music-left {
+  width: 260px;
+
+  display: flex;
+  align-items: center;
+
+  gap: 10px;
+
+  min-width: 0;
+}
+
+.music-icon {
+  width: 36px;
+  height: 36px;
+
+  flex-shrink: 0;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border-radius: 9px;
+
+  background: rgba(255, 255, 255, 0.09);
+
+  font-size: 16px;
+}
+
+.song-info {
+  min-width: 0;
+}
+
+.song-title {
+  font-size: 12px;
+  font-weight: 500;
+
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.song-subtitle {
+  margin-top: 2px;
+
+  font-size: 9px;
+
+  color: rgba(255, 255, 255, 0.42);
+}
+
+
+/* =========================
+   CONTROLS
+========================= */
+
+.music-controls {
+  display: flex;
+  align-items: center;
+
+  gap: 3px;
+
+  margin-left: auto;
+}
+
+.control-btn,
+.play-btn {
+  border: 1px solid rgba(255, 255, 255, 0.12);
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  cursor: pointer;
+
+  transition: 0.2s ease;
+}
+
+.control-btn {
+  width: 32px;
+  height: 32px;
+
+  border-radius: 50%;
+
+  background: transparent;
+
+  color: rgba(255, 255, 255, 0.7);
+
+  font-size: 14px;
+}
+
+.control-btn:hover {
+  background: rgba(255, 255, 255, 0.08);
+
+  color: white;
+}
+
+.play-btn {
+  width: 36px;
+  height: 36px;
+
+  border-radius: 50%;
+
+  background: rgba(255, 255, 255, 0.94);
+
+  color: #111;
+
+  font-size: 12px;
+}
+
+.play-btn:hover {
+  background: white;
+
+  transform: scale(1.04);
+}
+
+
+/* =========================
+   VOLUME
+========================= */
+
+.volume-area {
+  position: relative;
+
+  margin-left: 12px;
+}
+
+.volume-btn {
+  width: 34px;
+  height: 34px;
+
+  border: 1px solid rgba(255, 255, 255, 0.12);
+
+  border-radius: 50%;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  background: transparent;
+
+  color: white;
+
+  font-size: 15px;
+
+  cursor: pointer;
+}
+
+.volume-btn:hover {
+  background: rgba(255, 255, 255, 0.09);
+}
+
+
+/* Volume popup */
+
+.volume-popup {
+  position: absolute;
+
+  bottom: 42px;
+  rotate: -90deg;
+
+  width: 100px;
+  height: 38px;
+
+  padding: 0 10px;
+
+  display: flex;
+  align-items: center;
+
+  background: rgba(20, 20, 20, 0.85);
+
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+
+  border: 1px solid rgba(255, 255, 255, 0.12);
+
+  border-radius: 10px;
+
+  opacity: 0;
+  visibility: hidden;
+
+  transform: translateY(5px);
+
+  transition:
+    opacity 0.18s ease,
+    transform 0.18s ease,
+    visibility 0.18s ease;
+}
+
+
+/* Hover sound button -> popup */
+
+.volume-area:hover .volume-popup {
+  opacity: 1;
+
+  visibility: visible;
+
+  transform: translateY(0);
+}
+
+
+/* Volume slider */
+
+.volume-popup input {
+  width: 100%;
+
+  height: 3px;
+
+  appearance: none;
+
+  background: rgba(255, 255, 255, 0.22);
+
+  border-radius: 10px;
+
+  cursor: pointer;
+}
+
+.volume-popup input::-webkit-slider-thumb {
+  appearance: none;
+
+  width: 8px;
+  height: 8px;
+
+  border-radius: 50%;
+
+  background: white;
+
+  cursor: pointer;
+}
+
+.volume-popup input::-moz-range-thumb {
+  width: 8px;
+  height: 8px;
+
+  border: 1px solid rgba(255, 255, 255, 0.12);
+
+  border-radius: 50%;
+
+  background: white;
+
+  cursor: pointer;
+}
+
+
+/* =========================
+   PROGRESS
+========================= */
+
+.progress-area {
+  width: 100%;
+
+  display: flex;
+  align-items: center;
+
+  gap: 8px;
+
+  margin-top: 3px;
+
+  font-size: 8px;
+
+  color: rgba(255, 255, 255, 0.42);
+}
+
+.progress-area input {
+  flex: 1;
+
+  width: 100%;
+
+  height: 3px;
+
+  appearance: none;
+
+  background: rgba(255, 255, 255, 0.18);
+
+  border-radius: 10px;
+
+  cursor: pointer;
+}
+
+.progress-area input::-webkit-slider-thumb {
+  appearance: none;
+
+  width: 8px;
+  height: 8px;
+
+  border-radius: 50%;
+
+  background: white;
+
+  cursor: pointer;
+}
+
+.progress-area input::-moz-range-thumb {
+  width: 8px;
+  height: 8px;
+
+  border: 1px solid rgba(255, 255, 255, 0.12);
+
+  border-radius: 50%;
+
+  background: white;
+
+  cursor: pointer;
+}
+
+
+/* =========================
+   HIDDEN YOUTUBE
+========================= */
+
+.youtube-hidden {
+  position: fixed;
+
+  width: 1px;
+  height: 1px;
+
+  left: -9999px;
+
+  opacity: 0;
+
+  pointer-events: none;
+}
+
+
+/* =========================
+   MOBILE
+========================= */
+
+@media (max-width: 700px) {
+
+  .music-player {
+
+    height: 82px;
+
+    border-radius: 14px;
+  }
+
+  .music-left {
+    width: auto;
+
+    flex: 1;
+  }
+
+  .music-icon {
+    width: 34px;
+    height: 34px;
+  }
+
+  .music-controls {
+    margin-left: 8px;
+  }
+
+  .progress-area {
+    margin-top: 4px;
+  }
+
+  .volume-area {
+    margin-left: 5px;
+  }
+
+  .volume-popup {
+    right: -5px;
+  }
+}

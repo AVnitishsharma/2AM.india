@@ -13,9 +13,9 @@
   position: relative;
 }
 .main{
-  height: fit-content;
+  height: 50%;
   position: absolute;
-  top: 50%;
+  top: 23%;
   left: 50%;
   transform: translate(-50%, -50%);
   display: flex;
@@ -31,6 +31,9 @@
   font-family: "Irish Grover", system-ui;
   font-weight: 200;
   font-style: normal;
+  margin: -28px;
+  padding: 0;
+  letter-spacing: 7px;
 }
 
 .nav {
@@ -46,11 +49,11 @@
 
 .nav h3 {
   color: white;
-  font-size: 32px;
+  font-size: 28px;
   margin: 0;
   padding: 0;
-  font-family: Arial, Helvetica, sans-serif;
-  font-weight: 400;
+  font-family: "Fjalla One", sans-serif;
+  font-weight: 200;
   font-style: normal;
 }
 
@@ -61,7 +64,7 @@
   list-style: none;
   margin: 0;
   padding: 0;
-  font-family: sans-serif;
+  font-family: "Libertinus Sans", sans-serif;
   font-weight: 200;
   font-style: normal;
 }

@@ -1,141 +1,148 @@
 @import url('https://fonts.googleapis.com/css2?family=Fjalla+One&family=Irish+Grover&family=Libertinus+Sans:ital,wght@0,400;0,700;1,400&family=Pacifico&family=Quintessential&display=swap');
-
-.App {
-  width: 100%;
-  height: 100%;
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-  background-image: url("../public/generated_image__2__2026-08-14_19_58_16.472682.webp");
-  background-size: cover;
-  background-position: center;
-  background-repeat: no-repeat;
-  position: relative;
+.App{
+  width:100%;
+  height:100%;
+  margin:0;
+  padding:0;
+  box-sizing:border-box;
+  background-image:url("../public/generated_image__2__2026-08-14_19_58_16.472682.webp");
+  background-size:cover;
+  background-position:center;
+  background-repeat:no-repeat;
+  position:relative;
 }
-
-.main {
-  height: 50%;
-  position: absolute;
-  top: 23%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  gap: 20px;
+.main{
+  height:50%;
+  position:absolute;
+  top:23%;
+  left:50%;
+  transform:translate(-50%,-50%);
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
+  align-items:center;
+  gap:20px;
 }
-
-.main h1 {
-  text-align: center;
-  color: white;
-  font-size: 128px;
-  font-family: "Irish Grover", system-ui;
-  font-weight: 200;
-  font-style: normal;
-  margin: -28px;
-  padding: 0;
-  letter-spacing: 7px;
+.main h1{
+  text-align:center;
+  color:white;
+  font-size:128px;
+  font-family:"Irish Grover",system-ui;
+  font-weight:200;
+  font-style:normal;
+  margin:-28px;
+  padding:0;
+  letter-spacing:7px;
 }
-
-.nav {
-  width: 100%;
-  height: 70px;
-  margin: 0;
-  padding: 0 50px;
-  box-sizing: border-box;
-  display: flex;
-  justify-content: space-between;
-  align-items: end;
+.nav{
+  width:100%;
+  height:55px;
+  margin:0;
+  padding:0 50px;
+  box-sizing:border-box;
+  display:flex;
+  justify-content:space-between;
+  align-items:end;
 }
-
-.nav h3 {
-  color: white;
-  font-size: 28px;
-  margin: 0;
-  padding: 0;
-  font-family: "Fjalla One", sans-serif;
-  font-weight: 200;
-  font-style: normal;
+.nav h3{
+  color:white;
+  font-size:28px;
+  margin:0;
+  padding:0;
+  font-family:"Fjalla One",sans-serif;
+  font-weight:200;
+  font-style:normal;
 }
-
-.nav ul {
-  display: flex;
-  justify-content: space-between;
-  gap: 12px;
-  list-style: none;
-  margin: 0;
-  padding: 0;
-  font-family: "Libertinus Sans", sans-serif;
-  font-weight: 200;
-  font-style: normal;
+.nav ul{
+  display:flex;
+  justify-content:space-between;
+  gap:18px;
+  list-style:none;
+  margin:0;
+  padding:0;
+  font-family:"Libertinus Sans",sans-serif;
+  font-weight:200;
+  font-style:normal;
 }
-
-.nav ul li {
-  color: white;
-  font-size: 14px;
-  margin: 0;
-  padding: 5px 10px;
-  border: 1px solid white;
-  border-radius: 40px;
-  cursor: pointer;
-  position: relative;
-  transition: .2s ease;
+.nav ul li{
+  color:white;
+  font-size:14px;
+  margin:0;
+  cursor:pointer;
+  position:relative;
+  transition:.2s ease;
 }
-
-.playlist-nav {
-  position: relative
+.playlist-nav{
+  position:relative;
+  padding:5px 10px;
 }
-
-.playlist-tooltip {
-  position: absolute;
-  left: 50%;
-  top: calc(100% + 2px);
-  transform: translateX(-50%) translateY(-6px);
-  width: 180px;
-  padding: 7px;
-  background: rgba(20, 20, 20, .65);
-  border: 1px solid rgba(255, 255, 255, .15);
-  border-radius: 12px;
-  backdrop-filter: blur(18px);
-  -webkit-backdrop-filter: blur(18px);
-  box-shadow: 0 12px 35px rgba(0, 0, 0, .3);
-  opacity: 0;
-  visibility: hidden;
-  pointer-events: none;
-  transition: .2s ease;
-  z-index: 999
+.playlist-nav i{
+  font-size:12px;
+  margin-left:3px;
 }
-
-.playlist-nav:hover .playlist-tooltip {
-  opacity: 1;
-  visibility: visible;
-  pointer-events: auto;
-  transform: translateX(-50%) translateY(0)
+.playlist-tooltip{
+  position:absolute;
+  left:50%;
+  top:100%;
+  transform:translateX(-50%) translateY(-6px);
+  width:180px;
+  padding:7px;
+  background:rgba(20,20,20,.65);
+  border:1px solid rgba(255,255,255,.15);
+  border-radius:12px;
+  backdrop-filter:blur(18px);
+  -webkit-backdrop-filter:blur(18px);
+  box-shadow:0 12px 35px rgba(0,0,0,.3);
+  opacity:0;
+  visibility:hidden;
+  pointer-events:none;
+  transition:.2s ease;
+  z-index:999;
 }
-
-.playlist-item {
-  padding: 9px 10px;
-  color: rgba(255, 255, 255, .75);
-  font-family: "Libertinus Sans", sans-serif;
-  font-size: 13px;
-  border-radius: 8px;
-  white-space: nowrap;
-  transition: .2s ease
+.playlist-nav:hover{
+  background:rgba(255,255,255,.05);
+  border-radius:8px;
 }
-
-.playlist-item:hover {
-  background: rgba(255, 255, 255, .12);
-  color: white
+.playlist-nav:hover .playlist-tooltip{
+  opacity:1;
+  visibility:visible;
+  pointer-events:auto;
+  transform:translateX(-50%) translateY(0);
 }
-.playlist-item.selected {
-  background: rgba(255, 255, 255, 0.25);
-  color: white;
-  border: 1px solid rgba(255, 255, 255, 0.4);
+.playlist-item{
+  padding:9px 10px;
+  color:rgba(255,255,255,.75);
+  font-family:"Libertinus Sans",sans-serif;
+  font-size:13px;
+  border-radius:8px;
+  white-space:nowrap;
+  transition:.2s ease;
 }
-
-.playlist-item.selected::before {
-  content: "●";
-  margin-right: 7px;
-  font-size: 8px;
+.playlist-item:hover{
+  background:rgba(255,255,255,.12);
+  color:white;
+}
+.playlist-item.selected{
+  background:rgba(255,255,255,.25);
+  color:white;
+  border:1px solid rgba(255,255,255,.4);
+}
+.playlist-item.selected::before{
+  content:"●";
+  margin-right:7px;
+  font-size:8px;
+}
+.fullscreen-toggle{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  padding:5px 7px;
+  border:1px solid rgba(255, 255, 255, 0.347);
+  border-radius:8px;
+  cursor:pointer;
+  transition:.2s ease;
+  background:rgba(255, 255, 255, 0.125);
+}
+.fullscreen-toggle:hover{
+  background:rgba(255, 255, 255, 0.151);
 }

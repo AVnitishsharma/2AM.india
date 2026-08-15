@@ -5,7 +5,7 @@ import MusicPlayer from './components/MusicPlayer'
 
 const App = () => {
   const [playlistId, setPlaylistId] = useState(
-    'PLeJj53E_q1uY4WxZsEyAsx5n-rUYLZrqO'
+    'PLCU2AKdwPmvpuHDVrlI5ObzhOElwuMWOV'
   )
 
   return (

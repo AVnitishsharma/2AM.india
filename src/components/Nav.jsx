@@ -1,17 +1,10 @@
 import React, { useState, useEffect } from 'react'
-
-const playlists = [
-  { name: 'Bhojpuri', id: 'PLeJj53E_q1uY4WxZsEyAsx5n-rUYLZrqO' },
-  { name: 'Chill Vibes', id: 'PLCU2AKdwPmvpuHDVrlI5ObzhOElwuMWOV' },
-  { name: 'Relax Music', id: 'PLiAttA3ZvGfk1vuF8Xq7j24sBsg4QuH17' },
-  { name: 'Lo-Fi Beats', id: 'PL115iZFgSUHaEbv9Why0FV7jvAN4qREdJ' },
-  { name: 'Romantic Songs', id: 'PLM9icwZsTGjmRI_djMqyoWEQQ-BtxBptm' },
-  { name: 'Focus Music', id: 'PL4taEUw-UM8QZ7NiTUm2mEpzia2ulckpi' }
-]
+import playlists from '../data/playlists'
 
 const Nav = ({ setPlaylistId }) => {
   const [time, setTime] = useState(new Date().toLocaleTimeString())
   const [selectedPlaylist, setSelectedPlaylist] = useState(playlists[0].id)
+  const [isFullscreen, setIsFullscreen] = useState(false)
 
   useEffect(() => {
     const timer = setInterval(() => {
@@ -21,9 +14,33 @@ const Nav = ({ setPlaylistId }) => {
     return () => clearInterval(timer)
   }, [])
 
+  useEffect(() => {
+    const handleFullscreenChange = () => {
+      setIsFullscreen(!!document.fullscreenElement)
+    }
+
+    document.addEventListener('fullscreenchange', handleFullscreenChange)
+
+    return () => {
+      document.removeEventListener('fullscreenchange', handleFullscreenChange)
+    }
+  }, [])
+
   const handlePlaylistSelect = (id) => {
     setSelectedPlaylist(id)
     setPlaylistId(id)
+  }
+
+  const goFullscreen = async () => {
+    try {
+      if (!document.fullscreenElement) {
+        await document.documentElement.requestFullscreen()
+      } else {
+        await document.exitFullscreen()
+      }
+    } catch (error) {
+      console.error('Fullscreen error:', error)
+    }
   }
 
   return (
@@ -32,14 +49,13 @@ const Nav = ({ setPlaylistId }) => {
 
       <ul>
         <li className="playlist-nav">
-          Playlists
+          Playlists <i class='bx bx-down-arrow-alt' ></i>
 
           <div className="playlist-tooltip">
             {playlists.map((playlist) => (
               <div
-                className={`playlist-item ${
-                  selectedPlaylist === playlist.id ? 'selected' : ''
-                }`}
+                className={`playlist-item ${selectedPlaylist === playlist.id ? 'selected' : ''
+                  }`}
                 key={playlist.id}
                 onClick={() => handlePlaylistSelect(playlist.id)}
               >
@@ -49,9 +65,12 @@ const Nav = ({ setPlaylistId }) => {
           </div>
         </li>
 
-        <li>Wallpaper</li>
-
-        <li><i class='bx bx-fullscreen'></i></li>
+        <li className="fullscreen-toggle">
+          <i
+            className={`bx ${isFullscreen ? 'bx-exit-fullscreen' : 'bx-fullscreen'}`}
+            onClick={goFullscreen}
+          ></i>
+        </li>
       </ul>
     </div>
   )

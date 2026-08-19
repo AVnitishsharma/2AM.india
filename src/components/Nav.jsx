@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useRef } from 'react'
 import playlists, { createPlaylistFromUrl } from '../data/playlists'
 
 const STORAGE_KEY = '2am-custom-playlists'
@@ -11,6 +11,8 @@ const Nav = ({ setPlaylistId }) => {
   const [playlistUrl, setPlaylistUrl] = useState('')
   const [playlistName, setPlaylistName] = useState('')
   const [playlistError, setPlaylistError] = useState('')
+  const [isPlaylistOpen, setIsPlaylistOpen] = useState(false)
+  const playlistNavRef = useRef(null)
 
   const allPlaylists = [...playlists, ...customPlaylists]
 
@@ -53,9 +55,24 @@ const Nav = ({ setPlaylistId }) => {
     }
   }, [])
 
+  useEffect(() => {
+    const handleOutsideTap = (event) => {
+      if (!playlistNavRef.current?.contains(event.target)) {
+        setIsPlaylistOpen(false)
+      }
+    }
+
+    document.addEventListener('pointerdown', handleOutsideTap)
+
+    return () => {
+      document.removeEventListener('pointerdown', handleOutsideTap)
+    }
+  }, [])
+
   const handlePlaylistSelect = (id) => {
     setSelectedPlaylist(id)
     setPlaylistId(id)
+    setIsPlaylistOpen(false)
   }
 
   const handleAddPlaylist = () => {
@@ -120,10 +137,14 @@ const Nav = ({ setPlaylistId }) => {
       <h3>{time}</h3>
 
       <ul>
-        <li className="playlist-nav">
+        <li
+          ref={playlistNavRef}
+          className={`playlist-nav ${isPlaylistOpen ? 'open' : ''}`}
+          onClick={() => setIsPlaylistOpen((isOpen) => !isOpen)}
+        >
           Playlists <i className='bx bx-down-arrow-alt' ></i>
 
-          <div className="playlist-tooltip">
+          <div className="playlist-tooltip" onClick={(event) => event.stopPropagation()}>
             {allPlaylists.map((playlist) => {
               const isCustom = customPlaylists.some((item) => item.id === playlist.id)
 

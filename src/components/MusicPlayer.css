@@ -332,8 +332,8 @@
   .music-player{
     width:calc(100vw - 20px);
     height:78px;
-    bottom:12px;
-    padding:8px 11px;
+    bottom:8%;
+    padding:8px 16px;
     border-radius:42px;
   }
   .music-left{

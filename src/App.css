@@ -1,15 +1,16 @@
 @import url('https://fonts.googleapis.com/css2?family=Fjalla+One&family=Irish+Grover&family=Libertinus+Sans:ital,wght@0,400;0,700;1,400&family=Pacifico&family=Quintessential&display=swap');
-.App{
-  width:100%;
-  height:100%;
-  margin:0;
-  padding:0;
-  box-sizing:border-box;
-  background-image:url("../public/generated_image__2__2026-08-14_19_58_16.472682.webp");
-  background-size:cover;
-  background-position:center;
-  background-repeat:no-repeat;
-  position:relative;
+
+.App {
+  width: 100vw;
+  min-height: 100vh;
+  margin: 0;
+  padding: 0;
+  background-image: url("../public/generated_image__2__2026-08-14_19_58_16.472682.webp");
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  position: relative;
+  overflow-x: hidden;
 }
 .main{
   height:50%;
@@ -97,7 +98,7 @@
   visibility:hidden;
   pointer-events:none;
   transition:.2s ease;
-  z-index:999;
+  z-index:9999;
 }
 .playlist-nav:hover{
   background:rgba(255,255,255,.05);
@@ -207,4 +208,39 @@
 }
 .fullscreen-toggle:hover{
   background:rgba(255, 255, 255, 0.151);
+}
+
+@media(max-width:700px){
+  .main{
+    top:25%;
+  }
+  .main h1{
+    font-size:96px;
+  }
+  .nav {
+    padding: 0 20px;
+  }
+  .nav h3{
+    font-size:22px;
+  }
+  .nav ul .fullscreen-toggle{
+    display:none;
+  }
+  .playlist-tooltip{
+    left:unset;
+  }
+}
+@media (hover: none) and (pointer: coarse) {
+  .playlist-nav:hover .playlist-tooltip {
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+  }
+
+  .playlist-nav.open .playlist-tooltip {
+    opacity: 1;
+    visibility: visible;
+    pointer-events: auto;
+    transform: translateX(-50%) translateY(0);
+  }
 }

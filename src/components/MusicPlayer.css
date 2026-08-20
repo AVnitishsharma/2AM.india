@@ -27,7 +27,7 @@
   transform:translateX(-50%);
   width:min(var(--player-width),calc(100vw - 32px));
   height:var(--player-height);
-  padding:9px 24px;
+  padding:9px 8px;
   display:flex;
   flex-direction:column;
   justify-content:center;
@@ -102,11 +102,12 @@
     0 4px 14px rgba(20,55,110,.12);
   font-size:14px;
 }
-.song-info{
-  min-width:0;
-  display:flex;
-  flex-direction:column;
-  justify-content:center;
+.song-info {
+  min-width: 0;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
 }
 .song-title{
   max-width:240px;
@@ -265,26 +266,23 @@
   box-shadow:0 0 7px rgba(100,160,235,.25);
   cursor:pointer;
 }
-.progress-area{
-  width:100%;
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-  flex-direction:row;
-  gap:7px;
-  margin-top: 5px;
-  font-size:8px;
-  color:var(--glass-text-muted);
+.progress-area {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  margin-top: 3px;
+  font-size: 8px;
 }
-.progress-area span{
-  min-width:27px;
-  font-variant-numeric:tabular-nums;
-  letter-spacing:.1px;
-  color:white
+.progress-area span {
+  min-width: 27px;
+  font-variant-numeric: tabular-nums;
+  color: white;
 }
-.progress-area span:last-child{
-  text-align:right;
+.progress-area span:last-child {
+  text-align: right;
 }
+
 .progress-area input{
   flex:1;
   width:100%;
@@ -296,6 +294,7 @@
   cursor:pointer;
   outline:none;
 }
+
 .progress-area input::-webkit-slider-thumb{
   appearance:none;
   width:8px;
@@ -306,6 +305,7 @@
   box-shadow:0 1px 5px rgba(0,0,0,.26);
   cursor:pointer;
 }
+
 .progress-area input::-moz-range-thumb{
   width:8px;
   height:8px;
@@ -314,6 +314,36 @@
   background:var(--accent-white);
   box-shadow:0 1px 5px rgba(0,0,0,.26);
   cursor:pointer;
+}
+
+.music-icon {
+  width: 52px;
+  height: 52px;
+  min-width: 52px;
+  border-radius: 50%;
+  overflow: hidden;
+}
+
+.song-thumbnail {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  border-radius: 50%;
+}
+
+.music-icon.rotating {
+  animation: rotateSong 5s linear infinite;
+}
+
+@keyframes rotateSong {
+  from {
+    transform: rotate(0deg);
+  }
+
+  to {
+    transform: rotate(360deg);
+  }
 }
 .youtube-hidden{
   position:fixed;

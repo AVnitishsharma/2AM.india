@@ -9,6 +9,7 @@ export default function MusicPlayer({ playlistId }) {
 
   const [playing, setPlaying] = useState(false);
   const [title, setTitle] = useState("Loading music...");
+  const [thumbnail, setThumbnail] = useState("");
   const [currentTime, setCurrentTime] = useState(0);
   const [duration, setDuration] = useState(0);
 
@@ -77,6 +78,13 @@ export default function MusicPlayer({ playlistId }) {
                     data?.title || "Music"
                   );
 
+                  // Current song image
+                  if (data?.video_id) {
+                    setThumbnail(
+                      `https://img.youtube.com/vi/${data.video_id}/hqdefault.jpg`
+                    );
+                  }
+
                   setDuration(
                     player.getDuration() || 0
                   );
@@ -110,6 +118,13 @@ export default function MusicPlayer({ playlistId }) {
                   setTitle(
                     data?.title || "Music"
                   );
+
+                  // Current song image update
+                  if (data?.video_id) {
+                    setThumbnail(
+                      `https://img.youtube.com/vi/${data.video_id}/hqdefault.jpg`
+                    );
+                  }
 
                   setDuration(
                     player.getDuration() || 0
@@ -212,6 +227,7 @@ export default function MusicPlayer({ playlistId }) {
       setCurrentTime(0);
       setDuration(0);
       setTitle("Loading music...");
+      setThumbnail("");
     } catch (error) {
       console.log(
         "Playlist change error:",
@@ -245,6 +261,13 @@ export default function MusicPlayer({ playlistId }) {
 
         if (data?.title) {
           setTitle(data.title);
+        }
+
+        // Current song image
+        if (data?.video_id) {
+          setThumbnail(
+            `https://img.youtube.com/vi/${data.video_id}/hqdefault.jpg`
+          );
         }
       } catch {}
     }, 500);
@@ -378,9 +401,149 @@ export default function MusicPlayer({ playlistId }) {
   // =========================================
 
   useEffect(() => {
+    let leftHoldTimer = null;
+    let rightHoldTimer = null;
+
+    let upHoldTimer = null;
+    let downHoldTimer = null;
+
+    let leftHeld = false;
+    let rightHeld = false;
+
+    let upHeld = false;
+    let downHeld = false;
+
+    let leftHoldStarted = false;
+    let rightHoldStarted = false;
+
+    // =====================================
+    // 10 SEC BACKWARD
+    // =====================================
+
+    const seekBackward = () => {
+      if (!playerRef.current) return;
+
+      try {
+        const player = playerRef.current;
+
+        const current =
+          player.getCurrentTime();
+
+        const newTime =
+          Math.max(0, current - 10);
+
+        player.seekTo(
+          newTime,
+          true
+        );
+
+        setCurrentTime(newTime);
+      } catch {}
+    };
+
+    // =====================================
+    // 10 SEC FORWARD
+    // =====================================
+
+    const seekForward = () => {
+      if (!playerRef.current) return;
+
+      try {
+        const player = playerRef.current;
+
+        const current =
+          player.getCurrentTime();
+
+        const total =
+          player.getDuration();
+
+        const newTime =
+          Math.min(
+            total,
+            current + 10
+          );
+
+        player.seekTo(
+          newTime,
+          true
+        );
+
+        setCurrentTime(newTime);
+      } catch {}
+    };
+
+    // =====================================
+    // VOLUME UP
+    // =====================================
+
+    const increaseVolume = () => {
+      if (!playerRef.current) return;
+
+      try {
+        const player = playerRef.current;
+
+        const currentVolume =
+          player.isMuted()
+            ? 0
+            : player.getVolume();
+
+        const newVolume =
+          Math.min(
+            100,
+            currentVolume + 5
+          );
+
+        player.unMute();
+        player.setVolume(newVolume);
+
+        setVolume(newVolume);
+        setMuted(false);
+      } catch {}
+    };
+
+    // =====================================
+    // VOLUME DOWN
+    // =====================================
+
+    const decreaseVolume = () => {
+      if (!playerRef.current) return;
+
+      try {
+        const player = playerRef.current;
+
+        const currentVolume =
+          player.isMuted()
+            ? 0
+            : player.getVolume();
+
+        const newVolume =
+          Math.max(
+            0,
+            currentVolume - 5
+          );
+
+        player.setVolume(newVolume);
+
+        setVolume(newVolume);
+
+        if (newVolume === 0) {
+          player.mute();
+          setMuted(true);
+        } else {
+          player.unMute();
+          setMuted(false);
+        }
+      } catch {}
+    };
+
+    // =====================================
+    // KEY DOWN
+    // =====================================
+
     const handleKeyDown = (e) => {
       // Agar user input field me type kar raha hai
       // to keyboard music control nahi karega
+
       const tagName =
         e.target.tagName.toLowerCase();
 
@@ -392,41 +555,311 @@ export default function MusicPlayer({ playlistId }) {
         return;
       }
 
+      // =====================================
       // SPACE = PLAY / PAUSE
+      // =====================================
+
       if (e.code === "Space") {
         e.preventDefault();
-        togglePlay();
+
+        if (!e.repeat) {
+          togglePlay();
+        }
+
+        return;
       }
 
-      // LEFT = PREVIOUS
+      // =====================================
+      // LEFT ARROW
+      // =====================================
+
       if (e.code === "ArrowLeft") {
         e.preventDefault();
-        previousSong();
+
+        if (e.repeat) {
+          return;
+        }
+
+        if (leftHeld) {
+          return;
+        }
+
+        leftHeld = true;
+        leftHoldStarted = false;
+
+        leftHoldTimer = setTimeout(() => {
+          leftHoldStarted = true;
+
+          // First 10 sec backward
+          seekBackward();
+
+          // Hold karte rehne par
+          // har 500ms me 10 sec backward
+
+          leftHoldTimer = setInterval(() => {
+            seekBackward();
+          }, 500);
+        }, 400);
+
+        return;
       }
 
-      // RIGHT = NEXT
+      // =====================================
+      // RIGHT ARROW
+      // =====================================
+
       if (e.code === "ArrowRight") {
         e.preventDefault();
-        nextSong();
+
+        if (e.repeat) {
+          return;
+        }
+
+        if (rightHeld) {
+          return;
+        }
+
+        rightHeld = true;
+        rightHoldStarted = false;
+
+        rightHoldTimer = setTimeout(() => {
+          rightHoldStarted = true;
+
+          // First 10 sec forward
+          seekForward();
+
+          // Hold karte rehne par
+          // har 500ms me 10 sec forward
+
+          rightHoldTimer = setInterval(() => {
+            seekForward();
+          }, 500);
+        }, 400);
+
+        return;
       }
 
+      // =====================================
+      // UP ARROW = VOLUME UP
+      // =====================================
+
+      if (e.code === "ArrowUp") {
+        e.preventDefault();
+
+        if (e.repeat) {
+          return;
+        }
+
+        if (upHeld) {
+          return;
+        }
+
+        upHeld = true;
+
+        // First volume +5
+        increaseVolume();
+
+        // 400ms ke baad hold mode
+        upHoldTimer = setTimeout(() => {
+          upHoldTimer = setInterval(() => {
+            increaseVolume();
+          }, 150);
+        }, 400);
+
+        return;
+      }
+
+      // =====================================
+      // DOWN ARROW = VOLUME DOWN
+      // =====================================
+
+      if (e.code === "ArrowDown") {
+        e.preventDefault();
+
+        if (e.repeat) {
+          return;
+        }
+
+        if (downHeld) {
+          return;
+        }
+
+        downHeld = true;
+
+        // First volume -5
+        decreaseVolume();
+
+        // 400ms ke baad hold mode
+        downHoldTimer = setTimeout(() => {
+          downHoldTimer = setInterval(() => {
+            decreaseVolume();
+          }, 150);
+        }, 400);
+
+        return;
+      }
+
+      // =====================================
       // M = MUTE
+      // =====================================
+
       if (e.key.toLowerCase() === "m") {
         e.preventDefault();
-        toggleMute();
+
+        if (!e.repeat) {
+          toggleMute();
+        }
       }
     };
+
+    // =====================================
+    // KEY UP
+    // =====================================
+
+    const handleKeyUp = (e) => {
+      // =====================================
+      // LEFT ARROW RELEASE
+      // =====================================
+
+      if (e.code === "ArrowLeft") {
+        e.preventDefault();
+
+        if (leftHoldTimer) {
+          clearTimeout(leftHoldTimer);
+          clearInterval(leftHoldTimer);
+
+          leftHoldTimer = null;
+        }
+
+        // Short press = Previous song
+        if (
+          leftHeld &&
+          !leftHoldStarted
+        ) {
+          previousSong();
+        }
+
+        leftHeld = false;
+        leftHoldStarted = false;
+
+        return;
+      }
+
+      // =====================================
+      // RIGHT ARROW RELEASE
+      // =====================================
+
+      if (e.code === "ArrowRight") {
+        e.preventDefault();
+
+        if (rightHoldTimer) {
+          clearTimeout(rightHoldTimer);
+          clearInterval(rightHoldTimer);
+
+          rightHoldTimer = null;
+        }
+
+        // Short press = Next song
+        if (
+          rightHeld &&
+          !rightHoldStarted
+        ) {
+          nextSong();
+        }
+
+        rightHeld = false;
+        rightHoldStarted = false;
+
+        return;
+      }
+
+      // =====================================
+      // UP ARROW RELEASE
+      // =====================================
+
+      if (e.code === "ArrowUp") {
+        e.preventDefault();
+
+        if (upHoldTimer) {
+          clearTimeout(upHoldTimer);
+          clearInterval(upHoldTimer);
+
+          upHoldTimer = null;
+        }
+
+        upHeld = false;
+
+        return;
+      }
+
+      // =====================================
+      // DOWN ARROW RELEASE
+      // =====================================
+
+      if (e.code === "ArrowDown") {
+        e.preventDefault();
+
+        if (downHoldTimer) {
+          clearTimeout(downHoldTimer);
+          clearInterval(downHoldTimer);
+
+          downHoldTimer = null;
+        }
+
+        downHeld = false;
+
+        return;
+      }
+    };
+
+    // =====================================
+    // ADD EVENTS
+    // =====================================
 
     window.addEventListener(
       "keydown",
       handleKeyDown
     );
 
+    window.addEventListener(
+      "keyup",
+      handleKeyUp
+    );
+
+    // =====================================
+    // CLEANUP
+    // =====================================
+
     return () => {
       window.removeEventListener(
         "keydown",
         handleKeyDown
       );
+
+      window.removeEventListener(
+        "keyup",
+        handleKeyUp
+      );
+
+      if (leftHoldTimer) {
+        clearTimeout(leftHoldTimer);
+        clearInterval(leftHoldTimer);
+      }
+
+      if (rightHoldTimer) {
+        clearTimeout(rightHoldTimer);
+        clearInterval(rightHoldTimer);
+      }
+
+      if (upHoldTimer) {
+        clearTimeout(upHoldTimer);
+        clearInterval(upHoldTimer);
+      }
+
+      if (downHoldTimer) {
+        clearTimeout(downHoldTimer);
+        clearInterval(downHoldTimer);
+      }
     };
   }, [playing, muted, volume]);
 
@@ -474,8 +907,20 @@ export default function MusicPlayer({ playlistId }) {
 
           <div className="music-left">
 
-            <div className="music-icon">
-              🎵
+            <div
+              className={`music-icon ${
+                playing ? "rotating" : ""
+              }`}
+            >
+              {thumbnail ? (
+                <img
+                  src={thumbnail}
+                  alt={title}
+                  className="song-thumbnail"
+                />
+              ) : (
+                "🎵"
+              )}
             </div>
 
             <div className="song-info">
@@ -486,6 +931,31 @@ export default function MusicPlayer({ playlistId }) {
 
               <div className="song-subtitle">
                 YouTube
+              </div>
+
+              {/* PROGRESS BAR
+                  SIRF SONG INFO KE NICHE */}
+
+              <div className="progress-area">
+
+                <span>
+                  {formatTime(
+                    currentTime
+                  )}
+                </span>
+
+                <input
+                  type="range"
+                  min="0"
+                  max={duration || 0}
+                  value={currentTime}
+                  onChange={changeProgress}
+                />
+
+                <span>
+                  {formatTime(duration)}
+                </span>
+
               </div>
 
             </div>
@@ -551,30 +1021,6 @@ export default function MusicPlayer({ playlistId }) {
             </div>
 
           </div>
-
-        </div>
-
-        {/* PROGRESS */}
-
-        <div className="progress-area">
-
-          <span>
-            {formatTime(
-              currentTime
-            )}
-          </span>
-
-          <input
-            type="range"
-            min="0"
-            max={duration || 0}
-            value={currentTime}
-            onChange={changeProgress}
-          />
-
-          <span>
-            {formatTime(duration)}
-          </span>
 
         </div>
 

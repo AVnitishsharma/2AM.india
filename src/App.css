@@ -128,12 +128,11 @@
   color:white;
 }
 .playlist-item.selected{
-  background:rgba(255,255,255,.25);
+  background:rgba(68, 101, 111, 0.975);
   color:white;
   border:1px solid rgba(255,255,255,.4);
 }
 .playlist-item.selected::before{
-  content:"●";
   margin-right:7px;
   font-size:8px;
 }
